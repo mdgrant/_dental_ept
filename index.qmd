@@ -1,14 +1,18 @@
 ---
-title: "Electrical Pulse Stimulation"
+title: "Electrical Pulse Stimulation (NOTE: DRAFT/Unverified)"
 # page-layout: full
 toc: true
+# format: pdf
 
 ---
 
 ```{r setup}
 #| include: false
+library(conflicted)
 library(tidyverse)
 library(gt)
+options(gt.html_tag_check = FALSE)
+library(mada)
 
 source("code/functions.R")
 
@@ -28,11 +32,9 @@ clinical <- readxl::read_xlsx("data/electrical_pulp_2024-09-16.xlsx", sheet = "c
   relocate(total, .after = study) |> 
   arrange(year)
 
-
-
 ```
 
-<caption_mg> `r table_ref()` The sensitivity of EPT in diagnosing necrotic pulp with direct clinical observation.  </caption_mg>
+<caption_mg> `r table_ref()` Studies examining the sensitivity of EPT in diagnosing necrotic pulp with direct clinical observation.  </caption_mg>
 
 ```{r study_table}
 #| echo: false
@@ -53,7 +55,7 @@ clinical |>
     total            ~ px(40),
     sample           ~ px(200),
     device           ~ px(100),
-    criteria         ~ px(120),
+    criteria         ~ px(150),
     design           ~ px(50),
     ) |>
   fmt_markdown(columns = everything()) |>
@@ -62,9 +64,11 @@ clinical |>
 
 ```
 
-```{r lr_dor}
-#| eval: false
+```{r lr-sens_data}
+#| eval: true
+#| echo: false
 
+## likelihood ratios ---------------------------------- (2024-09-25 15:39) @----
 posLR <- clinical |> 
   select(study, tp:fp) |> 
   rename_with(toupper) |> 
@@ -96,6 +100,7 @@ negLR_dat <- negLR_dat |>
 clinical_w_discrim_dat <- clinical |> 
   bind_cols(posLR_dat, negLR_dat) 
 
+## sensitivity/specificity ---------------------------- (2024-09-25 15:40) @----
 meta_sens <- meta::metaprop(tp, tp + fn,
   data = clinical,
   studlab = study,
@@ -106,10 +111,6 @@ meta_sens <- meta::metaprop(tp, tp + fn,
   hakn = TRUE,
   prediction = TRUE
 )
-
-meta_sens[c("TE", "lower", "upper")] |> 
-  as_tibble() |> 
-  mutate(across(everything(), ~ plogis(.))) 
 
 meta_spec <- meta::metaprop(tn, tn + fp,
   data = clinical,
@@ -122,15 +123,114 @@ meta_spec <- meta::metaprop(tn, tn + fp,
   prediction = TRUE
 )
 
-meta_spec[c("TE", "lower", "upper")] |> 
+sens_spec <- meta_sens[c("studlab", "TE", "lower", "upper")] |> 
   as_tibble() |> 
-  mutate(across(everything(), ~ plogis(.))) 
+  rename(sens = TE, sens_low = lower, sens_up = "upper") |>
+  bind_cols(meta_spec[c("TE", "lower", "upper")] |> as_tibble() |> rename(spec = TE, spec_low = lower, spec_up = upper) |> as_tibble()) |> 
+  mutate(across(-"studlab", ~ plogis(.))) |> 
+  rename(study = studlab) 
 
+clinical_w_discrim_dat <- clinical_w_discrim_dat |> 
+  rename(sens_init = sens) |> 
+  left_join(sens_spec, by = "study") |> 
+  mutate(
+    sens_ci = sprintf("%1.2f (%1.2f-%1.2f)", sens, sens_low, sens_up),
+    spec_ci = sprintf("%1.2f (%1.2f-%1.2f)", spec, spec_low, spec_up)
+  )
 
 ```
 
+<br/>
+
+<caption_mg> `r table_ref()` Sensitivity, specificity, and likelihood ratios of EPT in diagnosing necrotic pulp with direct clinical observation. </caption_mg>
+
+```{r lr-sens_table}
+#| echo: false
+#| eval: true
+
+clinical_w_discrim_dat |> 
+  select(study, sens_ci, spec_ci, posLR_est, negLR_est) |> 
+  gt(id = "one") |> 
+  cols_label(
+    study     = "Study",
+    sens_ci   = md("Sensitivity <br/>(95% CI)"),
+    spec_ci   = md("Specificity <br/>(95% CI)"),
+    posLR_est = md("LR+ <br/>(95% CI)"),
+    negLR_est = md("LR- <br/>(95% CI)")
+  ) |>
+  cols_width(
+    study     ~ px(130),
+    sens_ci   ~ px(120),
+    spec_ci   ~ px(120),
+    posLR_est ~ px(120),
+    negLR_est ~ px(120)
+  ) |>
+  fmt_markdown(columns = everything()) |>
+  gt_theme() |> 
+  tab_style(style = cell_text(align = "left"), locations = cells_body(columns = c(sens_ci:negLR_est))) |>
+  tab_style(style = cell_text(align = "center"), locations = cells_column_labels(columns = c(sens_ci:negLR_est)))
+
+```
+
+<br/>
+
+<caption_mg> `r figure_ref()` Sensitivity </caption_mg>
+
 ```{r}
-library(mada)
+#| echo: false
+#| include: false
+
+png("assets/meta_sens.png", width = 10.5, height = 7.5, units = "in", res = 300)
+meta::forest(meta_sens,
+  leftlabs = c("", "TP", "TP+FN"),
+  rightlabs = c("Sensitivity", "95% CI"),
+  print.tau2 = FALSE,
+  print.tau = TRUE,
+  digits.tau = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = FALSE,
+  print.I2 = FALSE
+)
+dev.off()
+
+trim_image("meta_sens.png")
+
+```
+![](assets/meta_sens.png){fig.align="left" width="55%"}
+
+<br/>
+
+<caption_mg> `r figure_ref()` Specificity </caption_mg>
+
+```{r}
+#| echo: false
+#| include: false
+
+png("assets/meta_spec.png", width = 10.5, height = 7.5, units = "in", res = 300)
+meta::forest(meta_spec,
+  leftlabs = c("", "TP", "TP+FN"),
+  rightlabs = c("Sensitivity", "95% CI"),
+  print.tau2 = FALSE,
+  print.tau = TRUE,
+  digits.tau = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = FALSE,
+  print.I2 = FALSE
+)
+dev.off()
+
+trim_image("meta_spec.png")
+
+```
+![](assets/meta_spec.png){fig.align="left" width="55%"}
+
+<br/>
+
+<caption_mg> `r figure_ref()` ROC </caption_mg>
+
+```{r}
+#| echo: false
+#| include: false
 
 bivariate <- clinical |> 
   select(study, tp:fp) |> 
@@ -138,20 +238,15 @@ bivariate <- clinical |>
   rename(names = STUDY) |>
   mada::reitsma()  
 
+png("assets/bivariate.png", width = 10.5, height = 7.5, units = "in", res = 300)
+par(bty = "n", xaxt = "l", yaxt = "l")
 plot(bivariate, predict = TRUE)
+dev.off()
 
-temp <- clinical |> 
-  select(study, tp:fp) |> 
-  rename_with(toupper) |> 
-  rename(names = STUDY) 
-
-
-forest(madauni(temp), type = "sens",  log = FALSE)
-
-
-
+trim_image("bivariate.png")
 
 ```
+![](assets/bivariate.png){fig.align="left" width="68%"}
 
 
 

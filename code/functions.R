@@ -69,6 +69,15 @@ figure_ref <- function() {
   paste0("Figure ", figure_n, ". ")
 }
 
+trim_image <- function(file_png) {
+  file_png <- paste0("assets/", file_png)
+  image <- magick::image_read(file_png)
+  image_trimmed <- magick::image_trim(image)  # Adjust fuzz value if needed
+  magick::image_write(image_trimmed, path = file_png)
+}
+
+
+
 # anchor_table_ref <- function() {
 #   table_n + 1
 # }
