@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Electrical Pulse Stimulation",
+    "section": "",
+    "text": "Clinical Observation\n Table 1. The sensitivity of EPT in diagnosing necrotic pulp with direct clinical observation. \n\n\n\n\n\n\n\n\nStudy\n N\nSample\nDevice\nDiagnostic Criteria\nDesign\n\n\n\n\nIngolfsson 1994\n21\n23.1 yr (11 – 37) clinical and PA lesion not specifiedAll ant. Teeth\nAnalytic Technology\n\n\n\n\n\n\nEvans 1999\n136\n13.5 yr (8 – 33.5)All ant. Teeth\nAnalytic Technology\n\n\ncase-control\n\n\nPetersson 1999\n59\n(20 – 79)Student clinic64/72 molars or PM\nAnalytic Technology\nNon-vital: &gt; 50\n\n\n\n\nGopikrishna 2007\n80\nNo age dataSingle canaled incisors, canines and PM\nParkell pulp tester\nNon-vital: readout &gt; contralateral\n\n\n\n\nWeisleder 2009\n150\n(18 – 76)Student clinicNo tooth type specified\nAnalytic Technology\n\n\n\n\n\n\nDastmalchi 2012\n24\n(18 – 50)mand. PM single-canaled\nAnalytic Technology\n\n\n\n\n\n\nVilla-Chaves 2013\n110\n38±15 (17 – 70) 36/50 molars or PM\nAnalytic Technology\n\n\n\n\n\n\nFarid 2015\n75\n25.73±18.7 yr (17 – 70)47/75 molars or PM\nParkell Gentle-Pulse\nnon-vital: &gt; No. 5 marking\n\n\n\n\nShahi 2015\n70\n(4 – 15)Primary and permanent teeth need RCT (N=50)\nParkell Digitest\n\n\n\n\n\n\nJanani 2020\n79\nNo age dataSingle rooted teeth requiring RCT (deep caries or elective)\nNot specified\nNon-vital: readout &gt; contralateral\n\n\n\n\n\n\n\n\n\n\nposLR &lt;- clinical |&gt; \n  select(study, tp:fp) |&gt; \n  rename_with(toupper) |&gt; \n  rename(names = STUDY) |&gt;\n  mada::madad() |&gt; \n  purrr::pluck(\"posLR\")\n\nnegLR &lt;- clinical |&gt; \n  select(study, tp:fp) |&gt; \n  rename_with(toupper) |&gt; \n  rename(names = STUDY) |&gt;\n  mada::madad() |&gt; \n  purrr::pluck(\"negLR\")\n\nposLR_dat &lt;- cbind(as.data.frame(do.call(cbind, posLR)))[-4] \nnames(posLR_dat) &lt;- c(\"posLR\", \"lower\", \"upper\")\n\nnegLR_dat &lt;- cbind(as.data.frame(do.call(cbind, negLR)))[-4]\nnames(negLR_dat) &lt;- c(\"negLR\", \"lower\", \"upper\")\n\nposLR_dat |&gt;\n  mutate(est = sprintf(\"%1.1f (%1.1f-%1.1f)\", posLR, lower, upper)) |&gt; \n  select(est)\n    \nnegLR_dat |&gt;\n  mutate(est = sprintf(\"%1.2f (%1.2f-%1.2f)\", negLR, lower, upper)) |&gt; \n  select(est)\n\n\nbivariate &lt;- clinical |&gt; \n  select(study, tp:fp) |&gt; \n  rename_with(toupper) |&gt; \n  rename(names = STUDY) |&gt;\n  mada::reitsma()  \n\nplot(bivariate, predict = TRUE)\n\n\n\n\n\n\n\n\n\nmeta_sens &lt;- meta::metaprop(tp, tp + fn,\n  data = clinical,\n  studlab = study,\n  sm = \"PLOGIT\",\n  method = \"GLMM\",\n  method.tau = \"ML\",\n  incr = 0,\n  hakn = TRUE,\n  prediction = TRUE\n)\n\nmeta::forest(meta_sens)"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  }
+]

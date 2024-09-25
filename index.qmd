@@ -1,0 +1,159 @@
+---
+title: "Electrical Pulse Stimulation"
+# page-layout: full
+toc: true
+
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(gt)
+
+source("code/functions.R")
+
+```
+
+# Clinical Observation 
+
+```{r data}
+#| include: false
+#| echo: false
+
+clinical <- readxl::read_xlsx("data/electrical_pulp_2024-09-16.xlsx", sheet = "clinical", range = "A1:N11") |> 
+  mutate(
+    study = str_remove(study, "et al "),
+    year = str_extract(study, "\\d{4}"),
+    total = tp + tn + fp + fn) |> 
+  relocate(total, .after = study) |> 
+  arrange(year)
+
+
+
+```
+
+<caption_mg> `r table_ref()` The sensitivity of EPT in diagnosing necrotic pulp with direct clinical observation.  </caption_mg>
+
+```{r study_table}
+#| echo: false
+
+clinical |> 
+  gt(id = "one") |> 
+  cols_hide(c(sens:fp, teeth, other, pts, note, year)) |>
+  cols_label(
+    study            = "Study",
+    total            = " N",
+    sample           = "Sample",
+    device           = "Device",
+    criteria         = "Diagnostic Criteria",
+    design           = "Design"
+  ) |>
+  cols_width(
+    study            ~ px(130),
+    total            ~ px(40),
+    sample           ~ px(200),
+    device           ~ px(100),
+    criteria         ~ px(120),
+    design           ~ px(50),
+    ) |>
+  fmt_markdown(columns = everything()) |>
+  gt_theme() |> 
+  sub_missing(columns = c(sample, criteria, design), missing_text = "")
+
+```
+
+```{r lr_dor}
+#| eval: false
+
+posLR <- clinical |> 
+  select(study, tp:fp) |> 
+  rename_with(toupper) |> 
+  rename(names = STUDY) |>
+  mada::madad() |> 
+  purrr::pluck("posLR")
+
+negLR <- clinical |> 
+  select(study, tp:fp) |> 
+  rename_with(toupper) |> 
+  rename(names = STUDY) |>
+  mada::madad() |> 
+  purrr::pluck("negLR")
+
+posLR_dat <- cbind(as.data.frame(do.call(cbind, posLR)))[-4] 
+names(posLR_dat) <- c("posLR", "posLR_low", "posLR_up")
+
+negLR_dat <- cbind(as.data.frame(do.call(cbind, negLR)))[-4]
+names(negLR_dat) <- c("negLR", "negLR_low", "negLR_up")
+
+posLR_dat <- posLR_dat |>
+  mutate(posLR_est = sprintf("%1.1f (%1.1f-%1.1f)", posLR, posLR_low, posLR_up)) |> 
+  select(posLR_est)
+    
+negLR_dat <- negLR_dat |>
+  mutate(negLR_est = sprintf("%1.2f (%1.2f-%1.2f)", negLR, negLR_low, negLR_up)) |> 
+  select(negLR_est)
+
+clinical_w_discrim_dat <- clinical |> 
+  bind_cols(posLR_dat, negLR_dat) 
+
+meta_sens <- meta::metaprop(tp, tp + fn,
+  data = clinical,
+  studlab = study,
+  sm = "PLOGIT",
+  method = "GLMM",
+  method.tau = "ML",
+  incr = 0,
+  hakn = TRUE,
+  prediction = TRUE
+)
+
+meta_sens[c("TE", "lower", "upper")] |> 
+  as_tibble() |> 
+  mutate(across(everything(), ~ plogis(.))) 
+
+meta_spec <- meta::metaprop(tn, tn + fp,
+  data = clinical,
+  studlab = study,
+  sm = "PLOGIT",
+  method = "GLMM",
+  method.tau = "ML",
+  incr = 0,
+  hakn = TRUE,
+  prediction = TRUE
+)
+
+meta_spec[c("TE", "lower", "upper")] |> 
+  as_tibble() |> 
+  mutate(across(everything(), ~ plogis(.))) 
+
+
+```
+
+```{r}
+library(mada)
+
+bivariate <- clinical |> 
+  select(study, tp:fp) |> 
+  rename_with(toupper) |> 
+  rename(names = STUDY) |>
+  mada::reitsma()  
+
+plot(bivariate, predict = TRUE)
+
+temp <- clinical |> 
+  select(study, tp:fp) |> 
+  rename_with(toupper) |> 
+  rename(names = STUDY) 
+
+
+forest(madauni(temp), type = "sens",  log = FALSE)
+
+
+
+
+```
+
+
+
+
+

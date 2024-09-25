@@ -1,0 +1,156 @@
+/* css styles */
+
+foot_mg {
+  font-size: 12px;
+  line-height: 0.4;
+  color: black;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  text-indent: -10px
+  white-space: pre-wrap;
+}
+
+caption_mg {
+  font-size: 1rem;
+  color: black;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+wf-mg {
+  font-size: 13px;
+  line-height: .4;
+  color: black;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+a {
+    text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+  background-color:  #aaecf1;
+}
+
+p {
+  line-height: 1.2;
+}
+
+p:has(> foot_mg) {
+  margin-bottom: 0px;
+  margin-left: 0px;
+  line-height: 1;
+}
+
+.navbar-dark, .navbar-light, .navbar {
+  background-color: #212529;
+}
+
+#one tr:hover {
+    background-color: #D5D8DC;
+    margin-bottom: -40px;
+}
+
+.navbar-dark, span.menu-text {
+    font-size: 16px;
+}
+
+/* Styles for the priority table */
+.priority-tbl {
+  font-size: 14px;
+  line-height: 10px;
+}
+
+.bar-chart {
+  flex-grow: 1;
+  margin-left: 6px;
+  height: 14px;
+}
+
+.bar {
+  height: 50%;
+}
+
+.rt-align-center {
+  text-align: center;
+}
+
+.Reactable
+.rt-thead
+.rt-th{
+  line-height: normal;
+  position: relative
+}
+
+div.callout-note.callout {
+    border-left-color: #F9F9F9 ;
+}
+
+.callout.callout-style-simple {
+    padding: 0.4em 0.7em;
+    border-left: 5px solid;
+    border-right: 1px solid #FFFFFF ;
+    border-top: 1px solid #FFFFFF ;
+    border-bottom: 1px solid #FFFFFF ;
+}
+
+.callout.callout-style-simple>div.callout-header {
+    border-bottom: none;
+    font-size: .9rem;
+    font-weight: 400;
+    opacity: 100%;
+}
+
+.table-caption {
+  text-align: left;
+}
+
+.sidebar nav[role="doc-toc"] ul {
+	 display: block;
+}
+
+.toc-title {
+  toc-color: #A93226 ;
+}
+
+vertical-text {
+   writing-mode: vertical-lr;
+   transform: rotate(180deg);
+}
+
+caption, .table-caption, .quarto-float-caption {
+	margin-bottom: 0px;
+}
+
+.quarto-float-tbl figcaption, caption, .table-caption {
+  padding-top: .5rem;
+  padding-bottom: 0px;
+  text-align: left;
+}
+
+panel-caption, .figure-caption, .subfigure-caption, .table-caption, figcaption.quarto-float-caption, caption {
+  font-size: .8rem;
+  color: #000000;
+}
+
+@font-face {
+    font-family: "GRADE-quality";
+    src: url('https://gradepro.org/fonts/GRADE-quality.eot');
+    src: url('https://gradepro.org/fonts/GRADE-quality.eot?#iefix')
+        format('embedded-opentype'),
+      url('https://gradepro.org/fonts/GRADE-quality.woff') format('woff'),
+      url('https://gradepro.org/fonts/GRADE-quality.ttf') format('truetype'),
+      url('https://gradepro.org/fonts/GRADE-quality.svg#GRADE-quality') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.quality-sign {
+      font-family: 'GRADE-quality', Cambria, Helvetica, Arial;
+      font-size: 10px;
+      text-align: center;
+}
+
+
+

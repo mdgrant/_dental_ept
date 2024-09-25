@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css?family=Open Sans');
+
+/*-- scss:defaults --*/
+$white:    #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #ddd !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #868e96 !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black:    #000 !default;
+$code:     #84b8ef !default;
+$color_1:  #000000;
+
+// Plasma colors
+// viridisLite::viridis(7, option = "plasma", begin = 0, end = 0.9)
+
+// Viridis colors
+// viridisLite::viridis(6, option = "viridis", begin = 0, end = 1)
+$blue:   #00688B !default;  // Plasma[1]
+$indigo: #5601A4 !default;  // Plasma[2]
+$purple: #900DA4 !default;  // Plasma[3]
+$pink:   #BF3984 !default;  // Plasma[4]
+$red:    #E16462 !default;  // Plasma[5]
+$orange: #F89441 !default;  // Plasma[6]
+$yellow: #FCCE25 !default;  // Plasma[7]
+$green:  #7AD151 !default;  // Viridis[5]
+$teal:   #2A788E !default;  // Viridis[3]
+$cyan:   #22A884 !default;  // Viridis[4]
+
+$primary:       $blue !default;
+$secondary:     $gray-500 !default;
+$success:       $green !default;
+$info:          $pink !default;
+$warning:       $yellow !default;
+$danger:        $orange !default;
+$light:         $gray-100 !default;
+$dark:          $gray-800 !default;
+
+$font-family-sans-serif:      Open Sans, sans-serif !default;
+$font-family-serif:           Open Sans, serif !default;  /* Not actually a serif font but whatever */
+
+$font-size-base:              0.9rem !default;
+$headings-font-weight:        700 !default;
+
+$h1-font-size: $font-size-base * 1.6;
+$h2-font-size: $font-size-base * 1.5;
+$h3-font-size: $font-size-base * 1.3;
+$h4-font-size: $font-size-base * 0.8;
+$h5-font-size: $font-size-base * 0.8;
+$h6-font-size: $font-size-base * 0.8;
+
+.h2 {
+	color: $blue
+}
+
+$toc-font-size: 0.95rem;
+$sidebar-font-size: 1.1rem;
+$sidebar-font-size-section: 0.95rem;
+$footer-font-size: 0.95rem;
+
+$link-color: $red;
+$link-hover-color: $teal;
+
+// Inline code
+$code-bg: $gray-200 !default;
+$code-color: $gray-900 !default;
+
+// Block code
+$monokai-bg: #2e3440;
+
+caption {
+	margin-bottom: 0px;
+	text-align: left;
+	white-space: nowrap;
+}
+.table-caption {
+	margin-bottom: 0px;
+	text-align: left;
+}
+.quarto-float-caption {
+	margin-bottom: 0px;
+	text-align: left;
+}
+.quarto-float-tbl {
+	figcaption {
+		padding-top: .5rem;
+		padding-bottom: 0px;
+		text-align: left;
+	}
+}
+panel-caption {
+	font-size: .8rem;
+	color: $color_1;
+	text-align: left;
+}
+.figure-caption {
+	font-size: .8rem;
+	color: $color_1;
+}
+.subfigure-caption {
+	font-size: .8rem;
+	color: $color_1;
+}
+figcaption.quarto-float-caption {
+	font-size: .8rem;
+	color: $color_1;
+}
+
+$background-color_1: #D5D8DC;
+
+#one {
+	tr {
+		&:hover {
+			background-color: $background-color_1;
+		}
+	}
+}
