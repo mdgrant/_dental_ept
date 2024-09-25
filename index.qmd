@@ -176,7 +176,7 @@ clinical_w_discrim_dat |>
 
 <caption_mg> `r figure_ref()` Sensitivity </caption_mg>
 
-```{r}
+```{r forest_sens}
 #| echo: false
 #| include: false
 
@@ -202,7 +202,7 @@ trim_image("meta_sens.png")
 
 <caption_mg> `r figure_ref()` Specificity </caption_mg>
 
-```{r}
+```{r forest_spec}
 #| echo: false
 #| include: false
 
@@ -228,7 +228,7 @@ trim_image("meta_spec.png")
 
 <caption_mg> `r figure_ref()` ROC </caption_mg>
 
-```{r}
+```{r auc_roc}
 #| echo: false
 #| include: false
 
