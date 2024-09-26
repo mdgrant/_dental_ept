@@ -189,7 +189,8 @@ meta::forest(meta_sens,
   digits.tau = 1,
   overall.hetstat = TRUE,
   print.I2.ci = FALSE,
-  print.I2 = FALSE
+  print.I2 = FALSE,
+  xlim = c(0.4, 1)
 )
 dev.off()
 

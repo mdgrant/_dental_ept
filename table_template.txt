@@ -1,0 +1,62 @@
+table_tab |>
+  mutate(study_l = ifelse(row_number() > 1, "", study_l), .by = study) |>
+  group_by() |>
+  gt(id = "one") |>
+  row_group_order(groups = c("")) |>
+  cols_hide(c(refid, refid_arm_id, study)) |>
+  cols_label(
+    study_l          = "Study",
+    arm_n            = " N",
+    drug_recode_abbr = "Comparator",
+    asa_ps_incl      = "PS",
+    age_table        = "    Age",
+    los_table        = "    LOS",
+    bar              = "0 – 25 days"
+  ) |>
+  cols_width(
+    study_l          ~ px(165),
+    arm_n            ~ px(45),
+    drug_recode_abbr ~ px(80),
+    asa_ps_incl      ~ px(60),
+    age_table        ~ px(100),
+    los_table        ~ px(100),
+    bar              ~ px(120)
+    )  |>
+  gt_theme_mg() |>
+  tab_spanner(label = "", columns = c(VARIABLES), level = 1) |>
+  sub_values(columns = effect, rows = study %in% c("Nishikawa 2004", "Tanaka 2017"), pattern = ".*", replacement = "") |>
+  sub_missing(columns = everything(), missing_text = "") |>
+  fmt_markdown(columns = c(study_l, bar, age_table, los_table)) |>
+  fmt_number(VARIABLE, decimals = 0) |>
+  fmt_integer(use_seps = TRUE, sep_mark = ",") |>
+  fmt_number(columns = c(vars), drop_trailing_zeros = TRUE) |>
+  fmt_number(columns = c(n_enroll, centers), use_seps = TRUE, drop_trailing_zeros = TRUE) |>
+  fmt_number(n, n_walk, n_walk_p, n_walk_g, n_walk_g_p, decimals = 0) |>
+  text_replace(data, pattern, replacement, locations = cells_body()) |>
+  tab_spanner(label = "LABEL", columns = c(col1:coln), level = 1) |>
+  tab_style(style = cell_text(align = "left"),        locations = cells_column_labels(columns = c())) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_column_labels(columns = c())) |>
+  tab_style(style = cell_text(align = "right"),       locations = cells_column_labels(columns = c())) |>
+  tab_style(style = cell_text(align = "left"),        locations = cells_body(columns = c())) |>
+  tab_style(style = cell_text(align = "center"),      locations = cells_body(columns = c())) |>
+  tab_style(style = cell_text(align = "right"),       locations = cells_body(columns = c())) |>
+  tab_style(style = cell_text(align = "center", font = "IBM Plex Mono"), locations = cells_body(columns = c(asa_ps_incl))) |>
+  tab_style(style = list(cell_text(color = color_1)), locations = cells_body(columns = c(), rows = str_detect())) |>
+  tab_style(style = list(cell_text(color = color_2)), locations = cells_body(columns = c(), rows = str_detect())) |>
+  tab_style(style = list(cell_text(color = color_3)), locations = cells_body(columns = c(), rows = str_detect())) |>
+
+  tab_style(style = "padding-left:20px;", locations = cells_body(columns = c( ))) |>
+  tab_style(style = "padding-left:20px;", locations = cells_column_labels(columns = c( ))) |>
+
+  tab_footnote(md("")) |>
+  tab_footnote("",                                    locations = cells_column_labels(columns = c())) |>
+  tab_footnote("",                                    locations = cells_body(columns = c(), rows = VARIABLE == ... )) |>
+
+  tab_footnote(md("NS: not stated")) |>
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, los_table))) |>
+  tab_footnote(md("ASA Physical Status."),            locations = cells_column_labels(columns = c(asa_ps_incl)))
+  tab_footnote("GI: gastrointestinal; Abd: abdominal (includes hepatic); Ortho: orthopedic; Various: more that one procedure category; Oralmax: oral and maxillofacial; Ophtho; ophthalmologic; Dex: Dexmedetomidine; Ulin: Ulinastatin; Hal: Haloperidol; Mid: Midazolam; Mid/Prop: Midazolam/propofol; Mid/Seve: Midazolam/sevoflurane; Preg: Pregabalin; Prop: Propofol; Plac; placebo; PS: physical status; Vol: volatile; TIVA: total intravenous anesthesia; Reg: regional; MMSE: Mini-Mental State Exam; Pre: preoperative; Ind: induction; Intr: intraoperative; Post(op): postoperative; —: unspecified.") |>
+  tab_footnote("Maintenance range if reported in parentheses.", locations = cells_column_labels(columns = maintain_range), placement = "right") |>
+  tab_footnote(md("Mean <u>Med</u> (SD) [Range] {IQR}."), locations = cells_column_labels(columns = c(age_table, pre_mmse)), placement = "right") |>
+  tab_footnote(md("ASA Physical Status of patients included (proportions can be found here[link to table add])."), locations = cells_column_labels(columns = c(asa_ps_incl)), placement = "right") |>
+  tab_footnote(md("Given as a single dose."), locations = cells_body(columns = maintain_range, rows = maintain_range %in% c("100", "200", "400")), placement = "right")
