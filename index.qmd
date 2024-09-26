@@ -190,7 +190,7 @@ meta::forest(meta_sens,
   overall.hetstat = TRUE,
   print.I2.ci = FALSE,
   print.I2 = FALSE,
-  xlim = c(0.4, 1)
+  xlim = c(0, 1)
 )
 dev.off()
 
@@ -216,7 +216,8 @@ meta::forest(meta_spec,
   digits.tau = 1,
   overall.hetstat = TRUE,
   print.I2.ci = FALSE,
-  print.I2 = FALSE
+  print.I2 = FALSE,
+  xlim = c(0, 1)
 )
 dev.off()
 
