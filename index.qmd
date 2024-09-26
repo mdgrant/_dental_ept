@@ -1,8 +1,12 @@
 ---
-title: "Electrical Pulse Stimulation (NOTE: DRAFT/Unverified)"
+title: "Electrical Pulse Stimulation (DRAFT/UNVERIFIED)"
 # page-layout: full
 toc: true
 # format: pdf
+bibliography: "bib/ept.bib"
+csl: begell-house-apa.csl
+link-citations: true
+nocite: '@*'
 
 ---
 
@@ -250,7 +254,7 @@ trim_image("bivariate.png")
 ```
 ![](assets/bivariate.png){fig.align="left" width="68%"}
 
-
+## References
 
 
 
