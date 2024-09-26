@@ -209,8 +209,8 @@ trim_image("meta_sens.png")
 
 png("assets/meta_spec.png", width = 10.5, height = 7.5, units = "in", res = 300)
 meta::forest(meta_spec,
-  leftlabs = c("", "TP", "TP+FN"),
-  rightlabs = c("Sensitivity", "95% CI"),
+  leftlabs = c("", "TN", "TN+FP"),
+  rightlabs = c("Specificity", "95% CI"),
   print.tau2 = FALSE,
   print.tau = TRUE,
   digits.tau = 1,
