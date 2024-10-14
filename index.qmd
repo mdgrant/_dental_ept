@@ -650,6 +650,19 @@ meta_sens <- meta::metaprop(tp, tp + fn,
   allstudies = TRUE
 )
 
+meta_sens_no_peters <- meta::metaprop(tp, tp + fn,
+  data = root_canal,
+  studlab = study,
+  sm = "PLOGIT",
+  method = "GLMM",
+  method.tau = "ML",
+  incr = 0,
+  hakn = TRUE,
+  subset = !str_detect(study, "Peters"),
+  prediction = TRUE,
+  allstudies = TRUE
+)
+
 meta_spec <- meta::metaprop(tn, tn + fp,
   data = root_canal,
   studlab = study,
@@ -665,9 +678,35 @@ meta_spec <- meta::metaprop(tn, tn + fp,
 
 ```
 
-<caption_mg> `r figure_ref()` Sensitivity root canal filled teeth. </caption_mg>
+<caption_mg> `r figure_ref()` Sensitivity root canal filled teeth (excludes Peters 1994). </caption_mg>
 
 ```{r forest_root_canal_filled_sens}
+#| eval: false
+#| echo: false
+#| include: false
+
+png("assets/meta_sens_root_canal_no_peters.png", width = 10.5, height = 7.5, units = "in", res = 300)
+meta::forest(meta_sens_no_peters,
+  leftlabs = c("", "TP", "TP+FN"),
+  rightlabs = c("Sensitivity", "95% CI"),
+  print.tau2 = FALSE,
+  print.tau = TRUE,
+  digits.tau = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = FALSE,
+  print.I2 = FALSE,
+  xlim = c(0, 1)
+)
+dev.off()
+
+trim_image("meta_sens_root_canal_no_peters.png")
+
+```
+<!-- ![](assets/meta_sens_root_canal.png){fig.align="left" width="55%"} -->
+
+<br/>
+
+```{r forest_root_canal_filled_sens_no_peters}}
 #| echo: false
 #| include: false
 
@@ -688,7 +727,8 @@ dev.off()
 trim_image("meta_sens_root_canal.png")
 
 ```
-![](assets/meta_sens_root_canal.png){fig.align="left" width="55%"}
+![](assets/meta_sens_root_canal_no_peters.png){fig.align="left" width="55%"}
+
 <br/>
 
 <caption_mg> `r figure_ref()` Specificity root canal filled teeth. </caption_mg>
