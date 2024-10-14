@@ -634,6 +634,10 @@ root_canal |>
 #| echo: false
 
 ## sensitivity/specificity ---------------------------- (2024-09-25 15:40) @----
+
+root_canal <- root_canal |> 
+  mutate(study = str_pad(study, 30, side = "right")) 
+
 meta_sens <- meta::metaprop(tp, tp + fn,
   data = root_canal,
   studlab = study,
@@ -654,7 +658,7 @@ meta_spec <- meta::metaprop(tn, tn + fp,
   method.tau = "ML",
   incr = 0,
   hakn = FALSE,
-  subset = study == "Chen & Abbott 2011",
+  subset = study == "Chen & Abbott 2011            ",
   prediction = FALSE,
   allstudies = TRUE
 )
@@ -710,9 +714,9 @@ dev.off()
 trim_image("meta_spec_root_canal.png")
 
 ```
-![](assets/meta_spec_root_canal.png){fig.align="left" width="53%"}
+![](assets/meta_spec_root_canal.png){fig.align="left" width="55%"}
 
-# References
+# References (partial)
 
 
 
