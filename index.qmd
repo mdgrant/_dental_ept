@@ -1,5 +1,5 @@
 ---
-title: "Electrical Pulse Stimulation (DRAFT/UNVERIFIED)"
+title: "Electrical Pulse Stimulation (DRAFT)"
 # page-layout: full-width
 table-layout: fixed
 toc: true
@@ -200,7 +200,7 @@ clinical_w_discrim_dat |>
 
 <br/>
 
-<caption_mg> `r figure_ref()` Sensitivity clinical. </caption_mg>
+<caption_mg> `r figure_ref()` Pooled sensitivity clinical. </caption_mg>
 
 ```{r forest_clinical_sens}
 #| echo: false
@@ -227,7 +227,7 @@ trim_image("meta_sens.png")
 
 <br/>
 
-<caption_mg> `r figure_ref()` Specificity clinical. </caption_mg>
+<caption_mg> `r figure_ref()` Pooled specificity clinical. </caption_mg>
 
 ```{r forest_clinical_spec}
 #| echo: false
@@ -254,6 +254,35 @@ trim_image("meta_spec.png")
 
 <br/>
 
+<caption_mg> `r figure_ref()` Pooled specificity clinical excluding Ingolfsson 1994 (case-control design). </caption_mg>
+
+```{r forest_clinical_spec_no_cc}
+#| echo: false
+#| include: false
+
+meta_spec_no_cc <- update(meta_spec, subset = !study  %in% c("Evans 1999", "Ingolfsson 1994"))
+
+png("assets/meta_spec_no_cc.png", width = 10.5, height = 7.5, units = "in", res = 300)
+meta::forest(meta_spec_no_cc,
+  leftlabs = c("", "TN", "TN+FP"),
+  rightlabs = c("Specificity", "95% CI"),
+  print.tau2 = FALSE,
+  print.tau = TRUE,
+  digits.tau = 1,
+  overall.hetstat = TRUE,
+  print.I2.ci = FALSE,
+  print.I2 = FALSE,
+  xlim = c(0, 1)
+)
+dev.off()
+
+trim_image("meta_spec_no_cc.png")
+
+```
+![](assets/meta_spec_no_cc.png){fig.align="left" width="55%"}
+
+<br/>
+
 <caption_mg> `r figure_ref()` ROC clinical. </caption_mg>
 
 ```{r clinical_auc_roc}
@@ -276,6 +305,10 @@ trim_image("bivariate.png")
 
 ```
 ![](assets/bivariate.png){fig.align="left" width="68%"}
+
+<foot_mg> Bivariate model with 95% confidence (solid) and prediction (dotted) regions. </foot_mg> 
+
+<br/>
 
 # Histology
 
@@ -451,7 +484,7 @@ histology_w_discrim_dat |>
 
 <br/>
 
-<caption_mg> `r figure_ref()` Sensitivity histology. </caption_mg>
+<caption_mg> `r figure_ref()` Pooled sensitivity histology. </caption_mg>
 
 ```{r forest_histology_sens}
 #| echo: false
@@ -478,7 +511,7 @@ trim_image("meta_sens_histology.png")
 
 <br/>
 
-<caption_mg> `r figure_ref()` Specificity histology. </caption_mg>
+<caption_mg> `r figure_ref()` Pooled specificity histology. </caption_mg>
 
 ```{r forest_histology_spec}
 #| echo: false
@@ -503,6 +536,8 @@ trim_image("meta_spec_histology.png")
 ```
 ![](assets/meta_spec_histology.png){fig.align="left" width="55%"}
 
+<br/>
+
 <caption_mg> `r figure_ref()` ROC histology. </caption_mg>
 
 ```{r histology_auc_roc}
@@ -526,11 +561,11 @@ trim_image("bivariate_histology.png")
 ```
 ![](assets/bivariate_histology.png){fig.align="left" width="68%"}
 
+<foot_mg> Bivariate model with 95% confidence (solid) and prediction (dotted) regions. </foot_mg> 
 
 <br/>
 
 ### Histology total necrosis only
-
 
 ```{r data_histology_tot_necrosis}
 #| echo: false
@@ -545,7 +580,7 @@ histology_tot_necrosis <- readxl::read_xlsx("data/electrical_pulp_2024-09-30.xls
 
 ```
 
-<caption_mg> `r figure_ref()` Sensitivity histology total necrosis only. </caption_mg>
+<caption_mg> `r figure_ref()` Pooled sensitivity histology total necrosis only. </caption_mg>
 
 ```{r forest_histology_total_necrosis_sens}
 #| echo: false
@@ -678,8 +713,6 @@ meta_spec <- meta::metaprop(tn, tn + fp,
 
 ```
 
-<caption_mg> `r figure_ref()` Sensitivity root canal filled teeth (excludes Peters 1994). </caption_mg>
-
 ```{r forest_root_canal_filled_sens}
 #| eval: false
 #| echo: false
@@ -705,6 +738,8 @@ trim_image("meta_sens_root_canal_no_peters.png")
 <!-- ![](assets/meta_sens_root_canal.png){fig.align="left" width="55%"} -->
 
 <br/>
+
+<caption_mg> `r figure_ref()` Pooled sensitivity root canal filled teeth (excludes Peters 1994). </caption_mg>
 
 ```{r forest_root_canal_filled_sens_no_peters}}
 #| echo: false
@@ -755,6 +790,8 @@ trim_image("meta_spec_root_canal.png")
 
 ```
 ![](assets/meta_spec_root_canal.png){fig.align="left" width="55%"}
+
+<br/>
 
 # References (partial)
 
