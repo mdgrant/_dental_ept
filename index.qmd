@@ -303,10 +303,19 @@ dev.off()
 
 trim_image("bivariate.png")
 
+# 95% ci for AUC
+# temp <- clinical |> 
+#   filter(study != "Evans 1999") |> 
+#   select(study, tp:fp) |> 
+#   rename_with(toupper) |> 
+#   rename(names = STUDY) 
+# 
+# dmetatools::AUC_boot(temp$TP, temp$FP, temp$FN, temp$TN)
+
 ```
 ![](assets/bivariate.png){fig.align="left" width="68%"}
 
-<foot_mg> Bivariate model with 95% confidence (solid) and prediction (dotted) regions. </foot_mg> 
+<foot_mg> AUC 0.81 (95% CI, 0.66–0.88). Bivariate model with 95% confidence (solid) and prediction (dotted) regions. </foot_mg> 
 
 <br/>
 
@@ -558,10 +567,19 @@ dev.off()
 
 trim_image("bivariate_histology.png")
 
+# 95% ci for AUC
+# temp <- histology |> 
+#   filter(!is.na(tp + fn + tn + fp)) |>
+#   select(study, tp:fp) |> 
+#   rename_with(toupper) |> 
+#   rename(names = STUDY) 
+# 
+# dmetatools::AUC_boot(temp$TP, temp$FP, temp$FN, temp$TN)
+
 ```
 ![](assets/bivariate_histology.png){fig.align="left" width="68%"}
 
-<foot_mg> Bivariate model with 95% confidence (solid) and prediction (dotted) regions. </foot_mg> 
+<foot_mg> AUC 0.81 (95% CI, 0.44–0.96). Bivariate model with 95% confidence (solid) and prediction (dotted) regions. </foot_mg> 
 
 <br/>
 
