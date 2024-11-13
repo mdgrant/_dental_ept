@@ -215,7 +215,9 @@ meta::forest(meta_sens,
   overall.hetstat = TRUE,
   print.I2.ci = FALSE,
   print.I2 = FALSE,
-  xlim = c(0, 1)
+  xlim = c(0, 1),
+  pooled.events = TRUE,
+  pooled.totals = TRUE
 )
 dev.off()
 
@@ -243,7 +245,9 @@ meta::forest(meta_spec,
   overall.hetstat = TRUE,
   print.I2.ci = FALSE,
   print.I2 = FALSE,
-  xlim = c(0, 1)
+  xlim = c(0, 1),
+  pooled.events = TRUE,
+  pooled.totals = TRUE
 )
 dev.off()
 
