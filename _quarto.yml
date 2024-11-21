@@ -7,7 +7,9 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
+        text: Studies
+      - href: coupledForest.qmd
+        text: Coupled Forest
       - about.qmd
 
 format:

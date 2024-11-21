@@ -197,13 +197,14 @@ clinical_w_discrim_dat |>
 
 ```
 
-<br/>
+<!-- <br/> -->
 
-<caption_mg> `r figure_ref()` Pooled sensitivity clinical. </caption_mg>
+<!-- <caption_mg> `r figure_ref()` Pooled sensitivity clinical. </caption_mg> -->
 
 ```{r forest_clinical_sens}
 #| echo: false
 #| include: false
+#| eval: false
 
 png("assets/meta_sens.png", width = 10.5, height = 7.5, units = "in", res = 300)
 meta::forest(meta_sens,
@@ -225,15 +226,16 @@ trim_image("meta_sens.png")
 
 ```
 
-![](assets/meta_sens.png){fig.align="left" width="55%"}
+<!-- ![](assets/meta_sens.png){fig.align="left" width="55%"} -->
 
-<br/>
+<!-- <br/> -->
 
-<caption_mg> `r figure_ref()` Pooled specificity clinical. </caption_mg>
+<!-- <caption_mg> `r figure_ref()` Pooled specificity clinical. </caption_mg> -->
 
 ```{r forest_clinical_spec}
 #| echo: false
 #| include: false
+#| eval: false
 
 png("assets/meta_spec.png", width = 10.5, height = 7.5, units = "in", res = 300)
 meta::forest(meta_spec,
@@ -255,15 +257,16 @@ trim_image("meta_spec.png")
 
 ```
 
-![](assets/meta_spec.png){fig.align="left" width="55%"}
+<!-- ![](assets/meta_spec.png){fig.align="left" width="55%"} -->
 
-<br/>
+<!-- <br/> -->
 
-<caption_mg> `r figure_ref()` Pooled specificity clinical excluding Ingolfsson 1994 (case-control design). </caption_mg>
+<!-- <caption_mg> `r figure_ref()` Pooled specificity clinical excluding Ingolfsson 1994 (case-control design). </caption_mg> -->
 
 ```{r forest_clinical_spec_no_cc}
 #| echo: false
 #| include: false
+#| eval: false
 
 meta_spec_no_cc <- update(meta_spec, subset = !study  %in% c("Evans 1999", "Ingolfsson 1994"))
 
@@ -287,15 +290,16 @@ trim_image("meta_spec_no_cc.png")
 
 ```
 
-![](assets/meta_spec_no_cc.png){fig.align="left" width="55%"}
+<!-- ![](assets/meta_spec_no_cc.png){fig.align="left" width="55%"} -->
 
-<br/>
+<!-- <br/> -->
 
-<caption_mg> `r figure_ref()` ROC clinical. </caption_mg>
+<!-- <caption_mg> `r figure_ref()` ROC clinical. </caption_mg> -->
 
 ```{r clinical_auc_roc}
 #| echo: false
 #| include: false
+#| eval: false
 
 bivariate <- clinical |> 
   filter(study != "Evans 1999") |> 
@@ -304,9 +308,16 @@ bivariate <- clinical |>
   rename(names = STUDY) |>
   mada::reitsma()  
 
+bivariate_data <- clinical |> 
+  filter(study != "Evans 1999") |> 
+  select(study, tp:fp) |> 
+  rename_with(toupper) |> 
+  rename(names = STUDY)
+
 png("assets/bivariate.png", width = 10.5, height = 7.5, units = "in", res = 300)
 par(bty = "n", xaxt = "l", yaxt = "l")
 plot(bivariate, predict = TRUE)
+points(fpr(bivariate_data), sens(bivariate_data), pch = 2)
 dev.off()
 
 trim_image("bivariate.png")
@@ -322,11 +333,11 @@ trim_image("bivariate.png")
 
 ```
 
-![](assets/bivariate.png){fig.align="left" width="68%"}
+<!-- ![](assets/bivariate.png){fig.align="left" width="68%"} -->
 
-<foot_mg> AUC 0.81 (95% CI, 0.66–0.88). Bivariate model with 95% confidence (solid) and prediction (dotted) regions. </foot_mg>
+<!-- <foot_mg> AUC 0.81 (95% CI, 0.66–0.88). Bivariate model with 95% confidence (solid) and prediction (dotted) regions. </foot_mg> -->
 
-<br/>
+<!-- <br/> -->
 
 # Histology
 
@@ -500,13 +511,14 @@ histology_w_discrim_dat |>
 
 ```
 
-<br/>
+<!-- <br/> -->
 
-<caption_mg> `r figure_ref()` Pooled sensitivity histology. </caption_mg>
+<!-- <caption_mg> `r figure_ref()` Pooled sensitivity histology. </caption_mg> -->
 
 ```{r forest_histology_sens}
 #| echo: false
 #| include: false
+#| eval: false
 
 png("assets/meta_sens_histology.png", width = 10.5, height = 7.5, units = "in", res = 300)
 meta::forest(meta_sens,
@@ -528,15 +540,16 @@ trim_image("meta_sens_histology.png")
 
 ```
 
-![](assets/meta_sens_histology.png){fig.align="left" width="55%"}
+<!-- ![](assets/meta_sens_histology.png){fig.align="left" width="55%"} -->
 
-<br/>
+<!-- <br/> -->
 
-<caption_mg> `r figure_ref()` Pooled specificity histology. </caption_mg>
+<!-- <caption_mg> `r figure_ref()` Pooled specificity histology. </caption_mg> -->
 
 ```{r forest_histology_spec}
 #| echo: false
 #| include: false
+#| eval: false
 
 png("assets/meta_spec_histology.png", width = 10.5, height = 7.5, units = "in", res = 300)
 meta::forest(meta_spec,
@@ -558,15 +571,16 @@ trim_image("meta_spec_histology.png")
 
 ```
 
-![](assets/meta_spec_histology.png){fig.align="left" width="55%"}
+<!-- ![](assets/meta_spec_histology.png){fig.align="left" width="55%"} -->
 
 <br/>
 
-<caption_mg> `r figure_ref()` ROC histology. </caption_mg>
+<!-- <caption_mg> `r figure_ref()` ROC histology. </caption_mg> -->
 
 ```{r histology_auc_roc}
 #| echo: false
 #| include: false
+#| eval: false
 
 bivariate <- histology |> 
   filter(!is.na(tp + fn + tn + fp)) |>
@@ -575,9 +589,16 @@ bivariate <- histology |>
   rename(names = STUDY) |>
   mada::reitsma()  
 
+bivariate_data <- histology |> 
+  filter(!is.na(tp + fn + tn + fp)) |>
+  select(study, tp:fp) |> 
+  rename_with(toupper) |> 
+  rename(names = STUDY)
+
 png("assets/bivariate_histology.png", width = 10.5, height = 7.5, units = "in", res = 300)
 par(bty = "n", xaxt = "l", yaxt = "l")
 plot(bivariate, predict = TRUE)
+points(fpr(bivariate_data), sens(bivariate_data), pch = 2)
 dev.off()
 
 trim_image("bivariate_histology.png")
@@ -593,16 +614,18 @@ trim_image("bivariate_histology.png")
 
 ```
 
-![](assets/bivariate_histology.png){fig.align="left" width="68%"}
+<!-- ![](assets/bivariate_histology.png){fig.align="left" width="68%"} -->
 
-<foot_mg> AUC 0.81 (95% CI, 0.44–0.96). Bivariate model with 95% confidence (solid) and prediction (dotted) regions. </foot_mg>
+<!-- <foot_mg> AUC 0.81 (95% CI, 0.44–0.96). Bivariate model with 95% confidence (solid) and prediction (dotted) regions. </foot_mg> -->
 
 <br/>
 
-### Histology total necrosis only
+<!-- ### Histology total necrosis only -->
 
 ```{r data_histology_tot_necrosis}
 #| echo: false
+#| include: false
+#| eval: false
 
 histology_tot_necrosis <- readxl::read_xlsx("data/electrical_pulp_2024-09-30.xlsx", sheet = "histology total necrosis only", range = "A1:M8") |> 
   mutate(
@@ -614,11 +637,12 @@ histology_tot_necrosis <- readxl::read_xlsx("data/electrical_pulp_2024-09-30.xls
 
 ```
 
-<caption_mg> `r figure_ref()` Pooled sensitivity histology total necrosis only. </caption_mg>
+<!-- <caption_mg> `r figure_ref()` Pooled sensitivity histology total necrosis only. </caption_mg> -->
 
 ```{r forest_histology_total_necrosis_sens}
 #| echo: false
 #| include: false
+#| eval: false
 
 meta_sens <- meta::metaprop(tp, tp + fn,
   data = histology_tot_necrosis,
@@ -652,7 +676,7 @@ trim_image("meta_sens_histology_total_necrosis.png")
 
 ```
 
-![](assets/meta_sens_histology_total_necrosis.png){fig.align="left" width="55%"}
+<!-- ![](assets/meta_sens_histology_total_necrosis.png){fig.align="left" width="55%"} -->
 
 # Root canal filled
 
@@ -660,7 +684,7 @@ trim_image("meta_sens_histology_total_necrosis.png")
 #| include: false
 #| echo: false
 
-root_canal <- readxl::read_xlsx("data/electrical_pulp_2024-09-30.xlsx", sheet = "root_canal_filled", range = "A1:M7") |> 
+root_canal <- readxl::read_xlsx("data/electrical_pulp_2024-09-30.xlsx", sheet = "root_canal_filled", range = "A1:M6") |> 
   mutate(
     study = str_remove(study, "et al "),
     year = str_extract(study, "\\d{4}"),
@@ -719,17 +743,18 @@ meta_sens <- meta::metaprop(tp, tp + fn,
   incr = 0,
   hakn = TRUE,
   prediction = TRUE,
-  subset = !str_detect(study, "Cooley & Robison 1980"),
+  # subset = !str_detect(study, "Cooley & Robison 1980"),
   allstudies = TRUE
 )
 
 ```
 
-<caption_mg> `r figure_ref()` Pooled sensitivity root canal filled teeth. </caption_mg>
+<!-- <caption_mg> `r figure_ref()` Pooled sensitivity root canal filled teeth. </caption_mg> -->
 
 ```{r forest_root_canal_filled_sens}
 #| echo: false
 #| include: false
+#| eval: false
 
 png("assets/meta_sens_root_canal.png", width = 10.5, height = 7.5, units = "in", res = 300)
 meta::forest(meta_sens,
@@ -753,11 +778,11 @@ trim_image("meta_sens_root_canal.png")
 
 ```
 
-![](assets/meta_sens_root_canal.png){fig.align="left" width="55%"}
+<!-- ![](assets/meta_sens_root_canal.png){fig.align="left" width="55%"} -->
 
 <br/>
 
-<caption_mg> `r figure_ref()` Specificity root canal filled teeth. </caption_mg>
+<!-- <caption_mg> `r figure_ref()` Specificity root canal filled teeth. </caption_mg> -->
 
 ```{r forest_root canal filled_spec}
 #| eval: false

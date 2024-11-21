@@ -1,0 +1,301 @@
+---
+title: "Coupled Forest Plots"
+---
+
+
+```{r setup}
+#| include: false
+library(conflicted)
+library(tidyverse)
+library(gt)
+options(gt.html_tag_check = FALSE)
+# library(mada)
+library(grid)
+library(forestploter)
+library(naniar)
+conflicts_prefer(dplyr::filter)
+
+source("code/functions.R")
+
+```
+
+```{r plot_function}
+#| include: false
+#| echo: false
+
+forest_plot <- function(data, arrange_by){
+
+meta_sens <- meta::metaprop(tp, tp + fn,
+  data = data,
+  studlab = study,
+  sm = "PLOGIT",
+  method = "GLMM",
+  method.tau = "ML",
+  incr = 0
+)
+
+meta_spec <- meta::metaprop(tn, tn + fp,
+  data = data,
+  studlab = study,
+  sm = "PLOGIT",
+  method = "GLMM",
+  method.tau = "ML",
+  incr = 0,
+  hakn = TRUE,
+  subset = tn + fp != 0
+)
+
+sens_spec <- as_tibble(meta_sens[c("studlab", "TE", "lower", "upper")]) |>
+  rename(sens = TE, sens_low = lower, sens_up = "upper") |>
+  left_join(as_tibble(meta_spec[c("studlab", "TE", "lower", "upper")]), by = "studlab") |>
+  rename(spec = TE, spec_low = lower, spec_up = upper) |>
+  mutate(
+    across(-"studlab", ~ plogis(.)),
+    # across(c(sens:spec_up), ~ replace_na_with(.x, 0)),
+    sens_ci = sprintf("%1.2f (%1.2f-%1.2f)", sens, sens_low, sens_up),
+    spec_ci = sprintf("%1.2f (%1.2f-%1.2f)", spec, spec_low, spec_up),
+    across(c(sens_ci, spec_ci), ~ ifelse(.x == "NA (NA-NA)", " ", .x)),
+    `     Sensitivity (95% CI)` = str_pad('', 60),
+    `     Specificity (95% CI)` = str_pad('', 60),
+    ` ` = str_pad('', 0),
+    `   ` = str_pad('', 0),
+    sens_ci = str_pad(sens_ci, width = 20, side = "left"),
+    spec_ci = str_pad(spec_ci, width = 20, side = "left"),
+    year = str_extract(studlab, "\\d{4}")
+  ) |>
+  rename(study = studlab) |>
+  left_join(data |> select(study, tp:fp), by = "study") |>
+  relocate(c(tp, fp, fn, tn), .after = study) |> 
+  rename(Study = study, TP = tp, FP = fp, FN = fn, TN = tn, `Sensitivity (95% CI)` = sens_ci, `Specificity (95% CI)` = spec_ci) |> 
+  mutate(
+    Study = str_pad(Study, width = 30, side = "right"),
+    across(c(TP:TN), ~ str_pad(.x, width = 3, side = "left"))) |> 
+  arrange({{arrange_by}})
+
+# Set-up theme
+tm <- forest_theme(
+  base_size = 12,
+  refline_gp = gpar(lwd = 0, lty = "dashed", col = "white"),
+  ci_fill = "blue",
+  text_hjust = c(0, 1, 0, 0, 0, 0, 0, 0, 0.5, 0.5, 0.5)
+)
+
+current_plot <- forestploter::forest(sens_spec |> select(Study, TP, FP, FN, TN, `Sensitivity (95% CI)`, `Specificity (95% CI)`, `   `, `     Sensitivity (95% CI)`, ` `, `     Specificity (95% CI)`),
+  est = list(
+    sens_spec$sens,
+    sens_spec$spec
+  ),
+  lower = list(
+    sens_spec$sens_low,
+    sens_spec$spec_low
+  ),
+  upper = list(
+    sens_spec$sens_up,
+    sens_spec$spec_up
+  ),
+  xlim = c(0, 1),
+  ci_column = c(9, 11),
+  ref_line = 1,
+  sizes = 1,
+  theme = tm
+)
+
+current_plot
+}
+
+```
+
+# Clinical Observation
+
+## Arranged by...
+
+### Year
+
+```{r clinical_data}
+#| include: false
+#| echo: false
+
+clinical_dat <- readxl::read_xlsx("data/electrical_pulp_2024-09-30.xlsx", sheet = "clinical", range = "A1:N11") |> 
+  mutate(
+    study = str_remove(study, "et al "),
+    year = str_extract(study, "\\d{4}"),
+    total = tp + tn + fp + fn) |> 
+  relocate(total, .after = study) |> 
+  arrange(year)
+
+plot_temp <- forest_plot(clinical_dat, year)
+
+png("assets/clinical_year.png", width = 15, height = 7.5, units = "in", res = 300)
+print(plot_temp)
+dev.off()
+
+trim_image("clinical_year.png")
+
+```
+
+![](assets/clinical_year.png){fig.align="left" width="90%"}
+
+### Sensitivity
+
+```{r clinical_data_sens}
+#| include: false
+#| echo: false
+
+plot_temp <- forest_plot(clinical_dat, sens)
+
+png("assets/clinical_sens.png", width = 15, height = 7.5, units = "in", res = 300)
+print(plot_temp)
+dev.off()
+
+trim_image("clinical_sens.png")
+
+```
+
+![](assets/clinical_sens.png){fig.align="left" width="90%"}
+
+### Specificity
+
+```{r clinical_data_spec}
+#| include: false
+#| echo: false
+
+plot_temp <- forest_plot(clinical_dat, spec)
+
+png("assets/clinical_spec.png", width = 15, height = 7.5, units = "in", res = 300)
+print(plot_temp)
+dev.off()
+
+trim_image("clinical_spec.png")
+
+```
+
+![](assets/clinical_spec.png){fig.align="left" width="90%"}
+
+<br/><br/>
+
+# Histology
+
+## Arranged by...
+
+### Year
+
+```{r histology_data}
+#| include: false
+#| echo: false
+
+histology_dat <- readxl::read_xlsx("data/electrical_pulp_2024-09-30.xlsx", sheet = "histology", range = "A1:M8") |> 
+  mutate(
+    study = str_remove(study, "et al "),
+    year = str_extract(study, "\\d{4}"),
+    across(c(tn, fp), ~ ifelse(is.na(.x), 0, .x)),
+    total = tp + tn + fp + fn) |> 
+  relocate(total, .after = study) |> 
+  arrange(year)
+
+plot_temp <- forest_plot(histology_dat, year)
+
+png("assets/histology_year.png", width = 15, height = 7.5, units = "in", res = 300)
+print(plot_temp)
+dev.off()
+
+trim_image("histology_year.png")
+
+```
+
+![](assets/histology_year.png){fig.align="left" width="90%"}
+
+### Sensitivity
+
+```{r histology_sens}
+#| include: false
+#| echo: false
+
+plot_temp <- forest_plot(histology_dat, sens)
+
+png("assets/histology_sens.png", width = 15, height = 7.5, units = "in", res = 300)
+print(plot_temp)
+dev.off()
+
+trim_image("histology_sens.png")
+
+```
+
+![](assets/histology_sens.png){fig.align="left" width="90%"}
+
+### Specificity
+
+```{r histology_spec}
+#| include: false
+#| echo: false
+
+plot_temp <- forest_plot(histology_dat, spec)
+
+png("assets/histology_spec.png", width = 15, height = 7.5, units = "in", res = 300)
+print(plot_temp)
+dev.off()
+
+trim_image("histology_spec.png")
+
+```
+
+![](assets/histology_spec.png){fig.align="left" width="90%"}
+
+# Root Canal Treated
+
+## Arranged by...
+
+### Year
+
+```{r root_canal_data}
+#| include: false
+#| echo: false
+
+root_canal_dat <- readxl::read_xlsx("data/electrical_pulp_2024-09-30.xlsx", sheet = "root_canal_filled", range = "A1:M6") |> 
+  mutate(
+    study = str_remove(study, "et al "),
+    year = str_extract(study, "\\d{4}"),
+    across(c(tn, fp), ~ ifelse(is.na(.x), 0, .x)),
+    total = tp + tn + fp + fn) |> 
+  relocate(total, .after = study) |> 
+  arrange(year)
+
+```
+
+```{r root_canal_year}
+#| include: false
+#| echo: false
+
+plot_temp <- forest_plot(root_canal_dat, year)
+
+png("assets/root_canal_year.png", width = 15, height = 7.5, units = "in", res = 300)
+print(plot_temp)
+dev.off()
+
+trim_image("root_canal_year.png")
+
+```
+
+![](assets/root_canal_year.png){fig.align="left" width="90%"}
+
+### Sensitivity
+
+```{r root_canal_sens}
+#| include: false
+#| echo: false
+
+plot_temp <- forest_plot(root_canal_dat, sens)
+
+png("assets/root_canal_sens.png", width = 15, height = 7.5, units = "in", res = 300)
+print(plot_temp)
+dev.off()
+
+trim_image("root_canal_sens.png")
+
+```
+
+![](assets/root_canal_sens.png){fig.align="left" width="90%"}
+
+
+
+
+
